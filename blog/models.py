@@ -1,6 +1,11 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.conf import settings
+
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 
 class Post(models.Model):
@@ -20,6 +25,8 @@ class Post(models.Model):
     status = models.CharField(
         max_length=2, choices=Status.choices, default=Status.DRAFT
     )
+    objects = models.Manager()  # The default manager - O gerenciador padrão.
+    published = PublishedManager()  # Our custom manager - Nosso gerenciador.
 
     class Meta:
         ordering = ("-publish",)
